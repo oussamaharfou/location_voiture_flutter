@@ -6,25 +6,27 @@ on:
     branches: [ "main" ]
 
 jobs:
-  # JOB 1: Analyse Statique (SAST)
   static-analysis:
     name: Analyse Statique CodeQL
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: untitled # C'est ici que GitHub va chercher ton code
     steps:
       - uses: actions/checkout@v4
+      
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-      - name: Install dependencies
-        run: flutter pub get
-      - name: Static Analysis
-        run: flutter analyze # Analyse de sécurité SAST
 
-  # JOB 2: Analyse des Dépendances (SCA)
+      - name: Install dependencies
+        # On entre dans le dossier 'untitled' avant de lancer la commande
+        run: flutter pub get
+        working-directory: untitled 
+
+      - name: Static Analysis
+        # Analyse SAST pour détecter les erreurs de code
+        run: flutter analyze
+        working-directory: untitled
+
   dependency-scan:
     name: Analyse SCA (Trivy)
     runs-on: ubuntu-latest
@@ -34,7 +36,6 @@ jobs:
         uses: aquasecurity/trivy-action@master
         with:
           scan-type: 'fs'
-          # On scanne spécifiquement le dossier untitled
           scan-ref: 'untitled' 
           format: 'table'
           severity: 'HIGH,CRITICAL'
