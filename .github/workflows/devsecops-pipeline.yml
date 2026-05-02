@@ -17,15 +17,17 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-          cache: true # Accélère le prochain build
+          cache: true
 
       - name: Install dependencies
-        # On force la recherche du pubspec.yaml
-        run: flutter pub get 
+        # Remplace 'NOM_DE_TON_DOSSIER' par le nom exact du dossier qui contient ton code (ex: untitled)
+        run: flutter pub get
+        working-directory: . 
 
       - name: Static Analysis
-        # Analyse le code pour détecter les vulnérabilités
-        run: flutter analyze 
+        # Détecte les failles de sécurité dans le code source
+        run: flutter analyze
+        working-directory: .
 
   # JOB 2: Analyse des Dépendances (SCA)
   dependency-scan:
@@ -35,7 +37,7 @@ jobs:
       - uses: actions/checkout@v4
       
       - name: Scan dependencies
-        # Vérifie que tes packages ne sont pas piratables
+        # Vérifie la sécurité des bibliothèques tierces
         uses: aquasecurity/trivy-action@master
         with:
           scan-type: 'fs'
